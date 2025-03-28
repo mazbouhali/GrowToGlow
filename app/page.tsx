@@ -24,9 +24,14 @@ export default function LandingPage() {
     const isSafari = /^((?!chrome|android|crios|fxios|opera|opios|edgios|duckduckgo|brave|vivaldi|samsungbrowser|fbav|instagram).)*safari/.test(userAgent);
     const isAndroid = /android/.test(userAgent);
     const isMobile = /mobile/.test(userAgent);
+    const isInStandaloneMode = 'standalone' in window.navigator && (window.navigator as any).standalone;
 
 
     if (isIOS) {
+      if (isInStandaloneMode) {
+        // App already installed, no prompt needed
+        return;
+      }
       if (isSafari) {
         setShowAddToHomePrompt(true);
       } else {
