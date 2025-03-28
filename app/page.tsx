@@ -13,38 +13,37 @@ interface BeforeInstallPromptEvent extends Event {
 
 export default function LandingPage() {
   const trendingVideos = ["9zZ02kkoBnk", "ay3OCW4eITM"];
-
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
   const [showInstall, setShowInstall] = useState(false);
+  const [showAddToHomePrompt, setShowAddToHomePrompt] = useState(false);
   const [showSafariPrompt, setShowSafariPrompt] = useState(false);
 
   useEffect(() => {
     const userAgent = window.navigator.userAgent.toLowerCase();
     const isIOS = /iphone|ipad|ipod/.test(userAgent);
-    const isSafari = /^((?!chrome|android).)*safari/.test(userAgent);
+    const isSafari = /^((?!chrome|android|crios|fxios|opera|opios|edgios|duckduckgo|brave|vivaldi|samsungbrowser|fbav|instagram).)*safari/.test(userAgent);
+    const isAndroid = /android/.test(userAgent);
+    const isMobile = /mobile/.test(userAgent);
 
-    // Android PWA Prompt
-    const handler = (e: Event) => {
-      e.preventDefault();
-      setDeferredPrompt(e as BeforeInstallPromptEvent);
-      setShowInstall(true);
-    };
 
-    if (window.matchMedia("(display-mode: browser)").matches) {
-      window.addEventListener("beforeinstallprompt", handler as EventListener);
-    }
-
-    // iOS Logic
     if (isIOS) {
       if (isSafari) {
-        setShowInstall(true);
+        setShowAddToHomePrompt(true);
       } else {
         setShowSafariPrompt(true);
       }
+    } else if (isAndroid && isMobile) {
+      // Android PWA Install Prompt
+      const handler = (e: Event) => {
+        e.preventDefault();
+        setDeferredPrompt(e as BeforeInstallPromptEvent);
+        setShowInstall(true);
+      };
+      window.addEventListener("beforeinstallprompt", handler as EventListener);
+    
+      return () => window.removeEventListener("beforeinstallprompt", handler as EventListener);
     }
     
-
-    return () => window.removeEventListener("beforeinstallprompt", handler as EventListener);
   }, []);
 
   const installPWA = async () => {
@@ -61,6 +60,7 @@ export default function LandingPage() {
 
   return (
     <div className="min-h-screen bg-pink-50 flex flex-col items-center relative">
+
       {/* Prompt: Open in Safari */}
       {showSafariPrompt && (
         <div className="fixed bottom-28 w-[90%] bg-white text-pink-700 text-center p-3 rounded-lg shadow-md border border-pink-300 z-30">
@@ -68,36 +68,36 @@ export default function LandingPage() {
         </div>
       )}
 
-      {/* Prompt: Add to Home Screen */}
-      {showSafariPrompt && (
-  <div className="fixed bottom-28 w-[90%] bg-white text-pink-700 text-center p-3 rounded-lg shadow-md border border-pink-300 z-30">
-    📢 <strong>For the best experience, open this page in Safari.</strong>
-    <p className="mt-2 text-sm flex items-center justify-center gap-1 flex-wrap">
-      Tap
-      <span className="flex items-center gap-1">
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          width="18"
-          height="18"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="#fd66c3"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        >
-          <path d="M4 12v7a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-7" />
-          <polyline points="16 6 12 2 8 6" />
-          <line x1="12" y1="2" x2="12" y2="15" />
-        </svg>
-        <span className="font-medium">Share</span>
-      </span>
-      then <strong>Add to Home Screen</strong>
-    </p>
-  </div>
-)}
+      {/* Prompt: Add to Home Screen (iOS Safari) */}
+      {showAddToHomePrompt && (
+        <div className="fixed bottom-28 w-[90%] bg-white text-pink-700 text-center p-3 rounded-lg shadow-md border border-pink-300 z-30">
+          📲 <strong>Install Grow to Glow for a better experience!</strong>
+          <p className="mt-2 text-sm flex items-center justify-center gap-1 flex-wrap">
+            Tap
+            <span className="flex items-center gap-1">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="18"
+                height="18"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="#fd66c3"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M4 12v7a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-7" />
+                <polyline points="16 6 12 2 8 6" />
+                <line x1="12" y1="2" x2="12" y2="15" />
+              </svg>
+              <span className="font-medium">Share</span>
+            </span>
+            then <strong>Add to Home Screen</strong>
+          </p>
+        </div>
+      )}
 
-      {/* Install PWA Prompt (Android) */}
+      {/* Prompt: Android Install */}
       {showInstall && (
         <div className="fixed bottom-28 left-4 right-4 bg-white text-pink-700 p-4 shadow-lg rounded-lg flex flex-col items-center animate-fadeIn border border-pink-300 z-30">
           <p className="text-center text-sm">📲 Install <b>Grow to Glow</b> for a better experience!</p>
@@ -162,7 +162,8 @@ export default function LandingPage() {
         whileHover={{ scale: 1.1 }}
         whileTap={{ scale: 0.9 }}
       >
-        <button className="relative flex items-center justify-center text-white text-lg font-bold" aria-label="Glow Button">
+        <button className="relative flex items-center justify-center text-white text-lg font-bold"
+        aria-label="Glow Button">
           <FaHeart className="text-[90px] text-red-500 drop-shadow-[4px_4px_2px_rgba(0,0,0,0.3)]" />
           <span className="absolute text-base drop-shadow-md">Glow</span>
         </button>
