@@ -132,7 +132,7 @@ export default function LandingPage() {
 
       {/* PWA Install Prompt (Only for Mobile) */}
       {showInstall && (
-        <div className="fixed bottom-24 left-4 right-4 bg-white text-pink-700 p-4 shadow-lg rounded-lg flex flex-col items-center animate-fadeIn border border-pink-300">
+        <div className="fixed bottom-28 left-4 right-4 bg-white text-pink-700 p-4 shadow-lg rounded-lg flex flex-col items-center animate-fadeIn border border-pink-300">
           <p className="text-center text-sm">
             📲 Install <b>Grow to Glow</b> for a better experience!
           </p>
