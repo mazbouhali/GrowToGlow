@@ -1,10 +1,10 @@
 {
     "name": "Grow to Glow",
-    "short_name": "MyPWA",
+    "short_name": "GrowToGlow",
     "start_url": "/",
     "display": "standalone",
-    "background_color": "#ffffff",
-    "theme_color": "#ffffff",
+    "background_color": "#fd66c3",
+    "theme_color": "#fd66c3",
     "icons": [
       {
         "src": "/icons/icon-192x192.png",
