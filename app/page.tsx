@@ -6,6 +6,10 @@ import { motion } from "framer-motion";
 import { FaHeart } from "react-icons/fa";
 import Image from "next/image";
 
+interface NavigatorStandalone extends Navigator {
+  standalone?: boolean;
+}
+
 interface BeforeInstallPromptEvent extends Event {
   prompt: () => void;
   userChoice: Promise<{ outcome: "accepted" | "dismissed" }>;
@@ -24,8 +28,7 @@ export default function LandingPage() {
     const isSafari = /^((?!chrome|android|crios|fxios|opera|opios|edgios|duckduckgo|brave|vivaldi|samsungbrowser|fbav|instagram).)*safari/.test(userAgent);
     const isAndroid = /android/.test(userAgent);
     const isMobile = /mobile/.test(userAgent);
-    const isInStandaloneMode = 'standalone' in window.navigator && (window.navigator as any).standalone;
-
+    const isInStandaloneMode = (window.navigator as NavigatorStandalone).standalone;
 
     if (isIOS) {
       if (isInStandaloneMode) {
