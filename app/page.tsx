@@ -16,18 +16,25 @@ export default function LandingPage() {
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
   const [showInstall, setShowInstall] = useState(false);
   const [showSafariPrompt, setShowSafariPrompt] = useState(false);
-  const [isSafari, setIsSafari] = useState(false);
+  const [showNonSafariPrompt, setShowNonSafariPrompt] = useState(false);
 
   useEffect(() => {
     const userAgent = window.navigator.userAgent.toLowerCase();
     const isIOS = /iphone|ipad|ipod/.test(userAgent);
-    const safariCheck = /^((?!chrome|android).)*safari/.test(userAgent);
-    setIsSafari(safariCheck);
+    const isSafari = /^((?!chrome|android).)*safari/.test(userAgent);
 
-    if (isIOS && !safariCheck) {
-      setShowSafariPrompt(true);
-    } else if (isIOS && safariCheck) {
-      setShowSafariPrompt(false);
+    const isInStandaloneMode = () =>
+      ("standalone" in window.navigator && (window.navigator as any).standalone) ||
+      window.matchMedia("(display-mode: standalone)").matches;
+
+    if (isIOS) {
+      if (isSafari) {
+        if (!isInStandaloneMode()) {
+          setShowSafariPrompt(true);
+        }
+      } else {
+        setShowNonSafariPrompt(true);
+      }
     }
 
     const handler = (e: Event) => {
@@ -35,12 +42,12 @@ export default function LandingPage() {
       setDeferredPrompt(e as BeforeInstallPromptEvent);
       setShowInstall(true);
     };
-  
-    if (window.matchMedia("(display-mode: browser)").matches) {
-      window.addEventListener("beforeinstallprompt", handler as EventListener);
-    }
-  
-    return () => window.removeEventListener("beforeinstallprompt", handler as EventListener);
+
+    window.addEventListener("beforeinstallprompt", handler as EventListener);
+
+    return () => {
+      window.removeEventListener("beforeinstallprompt", handler as EventListener);
+    };
   }, []);
 
   const installPWA = async () => {
@@ -56,36 +63,39 @@ export default function LandingPage() {
   };
 
   const openInSafari = () => {
-    if (navigator.share) {
-      navigator
-        .share({
-          title: "Open in Safari",
-          url: window.location.href,
-        })
-        .catch((err) => console.error("Error sharing:", err));
-    } else {
-      alert("Please manually open this page in Safari.");
-    }
+    window.open(window.location.href, "_blank");
   };
 
   return (
     <div className="min-h-screen bg-pink-50 flex flex-col items-center relative">
-      {/* Safari Prompt */}
+      {/* iOS Safari Prompt */}
       {showSafariPrompt && (
         <div className="fixed bottom-24 w-[90%] bg-white text-pink-700 text-center p-3 rounded-lg shadow-md border border-pink-300 z-30">
-          📢 <strong>For the best experience, open this page in Safari.</strong>
-          <br />
+          📢 <strong>Install Grow to Glow</strong>
+          <p className="text-sm mt-1">
+            Tap <span className="font-semibold">Share</span> and select <span className="font-semibold">Add to Home Screen</span>.
+          </p>
+        </div>
+      )}
+
+      {/* iOS Non-Safari Prompt */}
+      {showNonSafariPrompt && (
+        <div className="fixed bottom-24 w-[90%] bg-white text-pink-700 text-center p-3 rounded-lg shadow-md border border-pink-300 z-30">
+          📢 <strong>Open in Safari</strong>
+          <p className="text-sm mt-1">
+            To install <b>Grow to Glow</b>, please open this page in Safari.
+          </p>
           <button
             onClick={openInSafari}
-            className="mt-2 px-4 py-2 bg-blue-500 text-white rounded-lg shadow-md"
+            className="mt-2 px-4 py-2 bg-blue-500 text-white rounded-lg shadow-md text-sm"
           >
             Open in Safari
           </button>
         </div>
       )}
 
-      {/* Install PWA Prompt - Only show if in Safari on iOS */}
-      {isSafari && showInstall && (
+      {/* Android / Chromium PWA Prompt */}
+      {showInstall && (
         <div className="fixed bottom-28 left-4 right-4 bg-white text-pink-700 p-4 shadow-lg rounded-lg flex flex-col items-center animate-fadeIn border border-pink-300">
           <p className="text-center text-sm">📲 Install <b>Grow to Glow</b> for a better experience!</p>
           <button
@@ -129,6 +139,7 @@ export default function LandingPage() {
             ))}
           </div>
         </section>
+
         {/* What's Popular */}
         <section className="w-full mt-8 px-4">
           <h2 className="text-2xl font-bold text-pink-700">What&apos;s Popular in Irish Makeup</h2>
@@ -138,6 +149,7 @@ export default function LandingPage() {
             <li>💖 Irish Influencer-Approved Products</li>
             <li>📈 Viral TikTok Beauty Hacks</li>
           </ul>
+          <br /><br /><br /><br /><br /><br />
         </section>
       </main>
 
@@ -153,7 +165,7 @@ export default function LandingPage() {
           <span className="absolute text-base drop-shadow-md">Glow</span>
         </button>
       </motion.div>
-      
+
       {/* Bottom Navbar */}
       <nav className="w-full bg-[#fd66c3] text-white p-4 fixed bottom-0 shadow-md flex justify-around items-center h-20 z-10">
         <ul className="flex justify-around w-full text-lg">
