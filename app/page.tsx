@@ -17,45 +17,34 @@ export default function LandingPage() {
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
   const [showInstall, setShowInstall] = useState(false);
   const [showSafariPrompt, setShowSafariPrompt] = useState(false);
-  const [showNonSafariPrompt, setShowNonSafariPrompt] = useState(false);
 
   useEffect(() => {
-    const userAgent = window.navigator.userAgent;
-    const isIOS = /iphone|ipad|ipod/i.test(userAgent);
+    const userAgent = window.navigator.userAgent.toLowerCase();
+    const isIOS = /iphone|ipad|ipod/.test(userAgent);
+    const isSafari = /^((?!chrome|android).)*safari/.test(userAgent);
 
-    const isSafari =
-      isIOS &&
-      !!navigator.vendor &&
-      navigator.vendor.includes("Apple") &&
-      !/CriOS|FxiOS|EdgiOS|OPiOS|DuckDuckGo|Brave|Vivaldi|Instagram|FBAN|FBAV|Twitter|LinkedInApp|TikTok|Snapchat|Pinterest/i.test(
-        userAgent
-      );
-
-    const isInStandaloneMode = () =>
-      (window.navigator as Navigator & { standalone?: boolean }).standalone ||
-      window.matchMedia("(display-mode: standalone)").matches;
-
-    if (isIOS) {
-      if (isSafari) {
-        if (!isInStandaloneMode()) {
-          setShowSafariPrompt(true);
-        }
-      } else {
-        setShowNonSafariPrompt(true);
-      }
-    }
-
+    // Android PWA Prompt
     const handler = (e: Event) => {
       e.preventDefault();
       setDeferredPrompt(e as BeforeInstallPromptEvent);
       setShowInstall(true);
     };
 
-    window.addEventListener("beforeinstallprompt", handler as EventListener);
+    if (window.matchMedia("(display-mode: browser)").matches) {
+      window.addEventListener("beforeinstallprompt", handler as EventListener);
+    }
 
-    return () => {
-      window.removeEventListener("beforeinstallprompt", handler as EventListener);
-    };
+    // iOS Logic
+    if (isIOS) {
+      if (isSafari) {
+        setShowInstall(true);
+      } else {
+        setShowSafariPrompt(true);
+      }
+    }
+    
+
+    return () => window.removeEventListener("beforeinstallprompt", handler as EventListener);
   }, []);
 
   const installPWA = async () => {
@@ -70,37 +59,47 @@ export default function LandingPage() {
     }
   };
 
-  const openInSafari = () => {
-    alert("For the best experience, please open this page in Safari.");
-  };
-
   return (
     <div className="min-h-screen bg-pink-50 flex flex-col items-center relative">
-      {/* Non-Safari Prompt */}
-      {showNonSafariPrompt && (
-        <div className="fixed bottom-24 w-[90%] bg-white text-pink-700 text-center p-3 rounded-lg shadow-md border border-pink-300 z-30">
-          📢 <strong>Please open this site in Safari for the best experience.</strong>
-          <br />
-          <button
-            onClick={openInSafari}
-            className="mt-2 px-4 py-2 bg-blue-500 text-white rounded-lg shadow-md"
-          >
-            Open in Safari
-          </button>
+      {/* Prompt: Open in Safari */}
+      {showSafariPrompt && (
+        <div className="fixed bottom-28 w-[90%] bg-white text-pink-700 text-center p-3 rounded-lg shadow-md border border-pink-300 z-30">
+          📢 <strong>For the best experience, open this site in Safari on your iPhone.</strong>
         </div>
       )}
 
-      {/* Safari Add to Home Prompt */}
+      {/* Prompt: Add to Home Screen */}
       {showSafariPrompt && (
-        <div className="fixed bottom-24 w-[90%] bg-white text-pink-700 text-center p-3 rounded-lg shadow-md border border-pink-300 z-30">
-          📲 <strong>Install Grow to Glow:</strong>
-          <p className="mt-2">Tap the <strong>Share</strong> button and then <strong>Add to Home Screen</strong>.</p>
-        </div>
-      )}
+  <div className="fixed bottom-28 w-[90%] bg-white text-pink-700 text-center p-3 rounded-lg shadow-md border border-pink-300 z-30">
+    📢 <strong>For the best experience, open this page in Safari.</strong>
+    <p className="mt-2 text-sm flex items-center justify-center gap-1 flex-wrap">
+      Tap
+      <span className="flex items-center gap-1">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="18"
+          height="18"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="#fd66c3"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
+          <path d="M4 12v7a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-7" />
+          <polyline points="16 6 12 2 8 6" />
+          <line x1="12" y1="2" x2="12" y2="15" />
+        </svg>
+        <span className="font-medium">Share</span>
+      </span>
+      then <strong>Add to Home Screen</strong>
+    </p>
+  </div>
+)}
 
       {/* Install PWA Prompt (Android) */}
       {showInstall && (
-        <div className="fixed bottom-28 left-4 right-4 bg-white text-pink-700 p-4 shadow-lg rounded-lg flex flex-col items-center animate-fadeIn border border-pink-300">
+        <div className="fixed bottom-28 left-4 right-4 bg-white text-pink-700 p-4 shadow-lg rounded-lg flex flex-col items-center animate-fadeIn border border-pink-300 z-30">
           <p className="text-center text-sm">📲 Install <b>Grow to Glow</b> for a better experience!</p>
           <button
             onClick={installPWA}
@@ -114,22 +113,11 @@ export default function LandingPage() {
       {/* Top Navbar */}
       <nav className="w-full h-16 bg-[#fd66c3] text-white fixed top-0 shadow-md z-10 flex items-center justify-between px-4 pt-[env(safe-area-inset-top)]">
         <div className="relative w-12 h-12 min-w-[48px] min-h-[48px] rounded-full overflow-hidden">
-          <Image
-            src="/icons/icon-192x192.png"
-            alt="Logo"
-            width={48}
-            height={48}
-            className="rounded-full object-cover"
-            priority
-          />
+          <Image src="/icons/icon-192x192.png" alt="Logo" width={48} height={48} className="rounded-full object-cover" priority />
         </div>
         <ul className="w-full flex justify-around text-base">
-          <li>
-            <Link href="/">Home</Link>
-          </li>
-          <li>
-            <Link href="/beauty-tips">Beauty Tips & Tricks</Link>
-          </li>
+          <li><Link href="/">Home</Link></li>
+          <li><Link href="/beauty-tips">Beauty Tips & Tricks</Link></li>
         </ul>
       </nav>
 
@@ -169,15 +157,12 @@ export default function LandingPage() {
       </main>
 
       {/* Glow Button */}
-      <motion.div
+      <motion.div 
         className="fixed bottom-9 flex items-center justify-center z-20"
         whileHover={{ scale: 1.1 }}
         whileTap={{ scale: 0.9 }}
       >
-        <button
-          className="relative flex items-center justify-center text-white text-lg font-bold"
-          aria-label="Glow Button"
-        >
+        <button className="relative flex items-center justify-center text-white text-lg font-bold" aria-label="Glow Button">
           <FaHeart className="text-[90px] text-red-500 drop-shadow-[4px_4px_2px_rgba(0,0,0,0.3)]" />
           <span className="absolute text-base drop-shadow-md">Glow</span>
         </button>
@@ -186,12 +171,8 @@ export default function LandingPage() {
       {/* Bottom Navbar */}
       <nav className="w-full bg-[#fd66c3] text-white p-4 fixed bottom-0 shadow-md flex justify-around items-center h-20 z-10">
         <ul className="flex justify-around w-full text-lg">
-          <li>
-            <Link href="/investigate">Investigate</Link>
-          </li>
-          <li>
-            <Link href="/educate">Educate</Link>
-          </li>
+          <li><Link href="/investigate">Investigate</Link></li>
+          <li><Link href="/educate">Educate</Link></li>
         </ul>
       </nav>
     </div>
