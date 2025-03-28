@@ -24,8 +24,8 @@ export default function LandingPage() {
     const isSafari = /^((?!chrome|android).)*safari/.test(userAgent);
 
     const isInStandaloneMode = () =>
-      ("standalone" in window.navigator && (window.navigator as any).standalone) ||
-      window.matchMedia("(display-mode: standalone)").matches;
+      (window.navigator as Navigator & { standalone?: boolean }).standalone ||
+      window.matchMedia("(display-mode: standalone)").matches;    
 
     if (isIOS) {
       if (isSafari) {
