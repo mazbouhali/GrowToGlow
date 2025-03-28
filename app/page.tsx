@@ -16,23 +16,24 @@ export default function LandingPage() {
   return (
     <div className="min-h-screen bg-pink-50 flex flex-col items-center relative">
       {/* Top Navbar */}
-      <nav className="w-full bg-gradient-to-r from-pink-600 via-pink-500 to-purple-500 text-white p-4 fixed top-0 shadow-md z-10 flex items-center justify-between px-6">
-        <div className="relative w-16 h-16 min-w-[64px] min-h-[64px] rounded-full overflow-hidden">
-          <Image 
-            src="/icons/icon-192x192.png" 
-            alt="Logo" 
-            width={64} 
-            height={64} 
-            className="rounded-full object-cover"
-            priority 
-          />
-        </div>
+      <nav className="w-full h-16 bg-gradient-to-r from-pink-600 via-pink-500 to-purple-500 text-white fixed top-0 shadow-md z-10 flex items-center justify-between px-4 pt-[env(safe-area-inset-top)]">
+  <div className="relative w-12 h-12 min-w-[48px] min-h-[48px] rounded-full overflow-hidden">
+    <Image 
+      src="/icons/icon-192x192.png" 
+      alt="Logo" 
+      width={48} 
+      height={48} 
+      className="rounded-full object-cover"
+      priority 
+    />
+  </div>
 
-        <ul className="w-full flex justify-around text-lg">
-          <li><Link href="/">Home</Link></li>
-          <li><Link href="/beauty-tips">Beauty Tips & Tricks</Link></li>
-        </ul>
-      </nav>
+  <ul className="w-full flex justify-around text-base">
+    <li><Link href="/">Home</Link></li>
+    <li><Link href="/beauty-tips">Beauty Tips & Tricks</Link></li>
+  </ul>
+</nav>
+
 
       {/* Main Content */}
       <main className="flex-grow flex flex-col items-center justify-center text-center p-6 pt-24 w-full">

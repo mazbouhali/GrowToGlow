@@ -9,7 +9,7 @@ class MyDocument extends Document {
           {/* Link to the manifest file */}
           <link rel="manifest" href="/manifest.json" />
           {/* Optionally add meta tags for theme color */}
-          <meta name="theme-color" content="#317EFB" />
+          <meta name="theme-color" content="#ffffff" />
           {/* Add icons if necessary */}
           <link rel="apple-touch-icon" sizes="192x192" href="/icons/icon-192x192.png" />
           <link rel="apple-touch-icon" sizes="512x512" href="/icons/icon-512x512.png" />
