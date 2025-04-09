@@ -22,8 +22,10 @@ export default function LandingPage() {
           />
         </div>
 
-        <ul className="w-full flex justify-around text-base">
-          <li><Link href="/">Home</Link></li>
+        <ul className="w-full flex justify-around items-center text-base">
+        <li><Link href="/"className="flex items-center gap-[2px]">
+          <Image src="/icons/home-icon.png" alt="Home" width={30} height={30}/>
+          Glow</Link></li>
           <li><Link href="/beauty-tips">Beauty Tips & Tricks</Link></li>
         </ul>
       </nav>
@@ -48,14 +50,14 @@ export default function LandingPage() {
 
       {/* Glow Button */}
       <motion.div 
-        className="fixed bottom-10 flex items-center justify-center z-20"
+        className="fixed bottom-9 flex items-center justify-center z-20"
         whileHover={{ scale: 1.1 }}
         whileTap={{ scale: 0.9 }}
       >
         <button className="relative flex items-center justify-center text-white text-lg font-bold"
         aria-label="Glow Button">
           <FaHeart className="text-[90px] text-red-500 drop-shadow-[4px_4px_2px_rgba(0,0,0,0.3)]" />
-          <span className="absolute text-base drop-shadow-md">Glow</span>
+          <span className="absolute text-base drop-shadow-md">Grow</span>
         </button>
       </motion.div>
 

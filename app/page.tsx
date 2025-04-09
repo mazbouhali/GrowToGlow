@@ -123,8 +123,10 @@ export default function LandingPage() {
         <div className="relative w-12 h-12 min-w-[48px] min-h-[48px] rounded-full overflow-hidden">
           <Image src="/icons/icon-192x192.png" alt="Logo" width={48} height={48} className="rounded-full object-cover" priority />
         </div>
-        <ul className="w-full flex justify-around text-base">
-          <li><Link href="/">Home</Link></li>
+        <ul className="w-full flex justify-around items-center text-base">
+        <li><Link href="/"className="flex items-center gap-[2px]">
+          <Image src="/icons/home-icon.png" alt="Home" width={30} height={30}/>
+          Glow</Link></li>
           <li><Link href="/beauty-tips">Beauty Tips & Tricks</Link></li>
         </ul>
       </nav>
@@ -173,7 +175,7 @@ export default function LandingPage() {
         <button className="relative flex items-center justify-center text-white text-lg font-bold"
         aria-label="Glow Button">
           <FaHeart className="text-[90px] text-red-500 drop-shadow-[4px_4px_2px_rgba(0,0,0,0.3)]" />
-          <span className="absolute text-base drop-shadow-md">Glow</span>
+          <span className="absolute text-base drop-shadow-md">Grow</span>
         </button>
       </motion.div>
 
