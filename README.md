@@ -1,3 +1,7 @@
+This is a work in progress project aimed at providing an incognito opportunity primarily aimed at victims of domestic abuse to reach out without the fear of the aggressors knowledge.
+
+Visit https://grow-to-glow.vercel.app/
+
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
 ## Getting Started
